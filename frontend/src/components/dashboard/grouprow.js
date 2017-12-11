@@ -49,7 +49,7 @@ class GroupRow extends Component {
 
   deleteGroup(){
     //delete group
-    this.props.deleteGroup(this.props.group._id);
+    this.props.deleteGroup(this.props.group.id);
   }
 
   updateGroup(){
@@ -57,7 +57,7 @@ class GroupRow extends Component {
         groupNameError: ""
     });
     if(this.state.name !== '') {
-      this.props.updateGroup(this.state.name,this.props.group._id);
+      this.props.updateGroup(this.state.name,this.props.group.id);
     } else {
       this.setState({
         groupNameError: "Please enter group name"
@@ -66,7 +66,7 @@ class GroupRow extends Component {
   }
 
   componentWillReceiveProps(nextProps){
-    if(nextProps.getGroupByIdData === undefined || nextProps.getGroupByIdData._id === nextProps.group._id){
+    if(nextProps.getGroupByIdData === undefined || nextProps.getGroupByIdData.id === nextProps.group.id){
       if(nextProps.getGroupByIdSuccess){
         this.setState({
           name: nextProps.getGroupByIdData.name,
@@ -95,7 +95,7 @@ class GroupRow extends Component {
           message: 'Success',
           level: 'success'
         });
-        this.props.getGroupById(this.props.group._id);
+        this.props.getGroupById(this.props.group.id);
       } else if(nextProps.addRemoveMemberSuccess === false){
         this.notificationSystem.addNotification({
           message: 'Opps! Something went wrong',
@@ -122,7 +122,7 @@ class GroupRow extends Component {
   }
 
   loadModalData(){
-    this.props.getGroupById(this.props.group._id);
+    this.props.getGroupById(this.props.group.id);
     this.retrieveDataAsynchronously("");
   }
 
@@ -153,31 +153,31 @@ class GroupRow extends Component {
   onSelect(val,item){
       this.setState({
           searchValue: val,
-          selectedUser: item._id
+          selectedUser: item.id
       });
   }
 
   renderItem(item, isHighlighted){
       return (
-          <div className={`item ${isHighlighted ? 'item-highlighted' : ''}`} key={item._id}>
-            <p>{item.first_name} {item.last_name}</p>
+          <div className={`item ${isHighlighted ? 'item-highlighted' : ''}`} key={item.id}>
+            <p>{item.username}</p>
             <p>{item.email}</p>
           </div>
       ); 
   }
 
   getItemValue(item){
-    return `${item.first_name+' '+item.last_name}`;
+    return `${item.username}`;
   }
 
   addMember(){
     if(this.state.selectedUser) {
-      this.props.addRemoveMemberGroup(this.props.group._id,this.state.selectedUser,'ADD');
+      this.props.addRemoveMemberGroup(this.props.group.id,this.state.selectedUser,'ADD');
     }
   }
 
   removeMember(index){
-    this.props.addRemoveMemberGroup(this.props.group._id,this.state.members[index]._id,'REMOVE');
+    this.props.addRemoveMemberGroup(this.props.group.id,this.state.members[index].id,'REMOVE');
   }
 
 	render() {
@@ -227,8 +227,7 @@ class GroupRow extends Component {
                     inputProps={{ id: 'states-autocomplete', className: 'form-control'}}
                     wrapperStyle={{ position: 'relative', display: 'inline-block', width: '100%' }}
                     shouldItemRender={(item, value) => 
-                      item.first_name.toLowerCase().indexOf(value.toLowerCase()) > -1 
-                      || item.last_name.toLowerCase().indexOf(value.toLowerCase()) > -1 
+                      item.username.toLowerCase().indexOf(value.toLowerCase()) > -1 
                       || item.email.toLowerCase().indexOf(value.toLowerCase()) > -1
                     }
                     getItemValue={this.getItemValue}
@@ -254,7 +253,7 @@ class GroupRow extends Component {
                   return (
                     <li className="member-row" key={index}>
                       <div className="pull-left left-section">
-                        <p className="member-name">{member.first_name} {member.last_name}</p>
+                        <p className="member-name">{member.username}</p>
                         <p className="member-email">{member.email}</p>
                       </div>
                       <div className="pull-right right-section" onClick={() => _this.removeMember(index)}>

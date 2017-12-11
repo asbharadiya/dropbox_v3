@@ -47,7 +47,7 @@ class Signup extends Component {
       isFormValid = false;
     }
     if(isFormValid) {
-      api.signup({email:this.email.value,password:this.password.value,first_name:this.firstName.value,last_name:this.lastName.value})
+      api.signup({email:this.email.value,password:this.password.value,firstName:this.firstName.value,lastName:this.lastName.value})
       .then((res) => {
         if (res.status === 200) {
           this.props.history.push("/home");

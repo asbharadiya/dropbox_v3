@@ -14,16 +14,19 @@ export function addAsset(file,isDir,superParent,parent,name) {
 		if(file !== null) {
 			formData.append("file",file);
 		}
-		formData.append("isDirectory",isDir);
+		var jsonObj = {
+			"isDirectory":isDir
+		};
 		if(parent !== null) {
-			formData.append("parent",parent);
+			jsonObj.parent = parent;
 		}
 		if(superParent !== null) {
-			formData.append("superParent",superParent);
+			jsonObj.superParent = superParent;
 		}
 		if(name !== null) {
-			formData.append("name",name);
+			jsonObj.name = name;
 		}
+		formData.append("body",JSON.stringify(jsonObj));
 	    return api.addAsset(formData).then(response => {
 	    	if(response.status === 200){
 	    		dispatch(addAssetSuccess(isDir));
@@ -46,7 +49,12 @@ function getAssetsFailure(){
 
 export function getAssets(superParent,parent) {
 	return function(dispatch) {
-		return api.getAssets({superParent:superParent,parent:parent}).then(response => {
+		var obj = {};
+		if(superParent !== null && parent !== null){
+			obj.superParent = superParent;
+			obj.parent = parent;
+		}
+		return api.getAssets(obj).then(response => {
 	    	if(response.status === 200){
 	    		dispatch(getAssetsSuccess(response.data));
 	    	} else {

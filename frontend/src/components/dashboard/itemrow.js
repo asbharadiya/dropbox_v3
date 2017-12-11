@@ -56,11 +56,11 @@ class ItemRow extends Component {
   shareAsset(){
     if(this.state.selectedOption === 'users') {
       if(this.state.selectedUser){
-        this.props.shareAsset(this.props.item._id,"users",this.state.selectedUser);
+        this.props.shareAsset(this.props.item.id,"users",this.state.selectedUser);
       }
     } else {
       if(this.state.selectedGroup){
-        this.props.shareAsset(this.props.item._id,"groups",this.state.selectedGroup);
+        this.props.shareAsset(this.props.item.id,"groups",this.state.selectedGroup);
       }
     }
   }
@@ -68,14 +68,14 @@ class ItemRow extends Component {
   goToFolder(item){
     let location = this.props.location.pathname.split("/");
     if(location[location.length-1] === "home" || location[location.length-1] === "files"){
-        this.props.history.push("folders/"+item.owner_id+"/"+item.name);
+        this.props.history.push("folders/"+item.ownerId+"/"+item.name);
     } else {
       this.props.history.push(this.props.location.pathname+"/"+item.name);
     }
   }
 
   handleRowClick(){
-    if(this.props.item.is_directory === 0){
+    if(!this.props.item.directory){
       //download file
       this.downloadAsset();
     } else {
@@ -91,25 +91,25 @@ class ItemRow extends Component {
         superParent = location[3];
     }
     if(superParent === null) {
-      window.open("http://localhost:3001/api/download_asset/"+this.props.item._id,"_blank");
+      window.open("http://localhost:3001/api/download_asset/"+this.props.item.id,"_blank");
     } else {
-      window.open("http://localhost:3001/api/download_asset/"+this.props.item._id+"/"+superParent,"_blank");
+      window.open("http://localhost:3001/api/download_asset/"+this.props.item.id,"_blank");
     }
   }
 
   deleteAsset(){
     //delete asset
-    this.props.deleteAsset(this.props.item._id);
+    this.props.deleteAsset(this.props.item.id);
   }
 
   addAssetToStarred(){
     //add asset to starred
-    this.props.starAsset(this.props.item._id,true);
+    this.props.starAsset(this.props.item.id,true);
   }
 
   removeAssetFromStarred(){
     //remove asset from starred
-    this.props.starAsset(this.props.item._id,false);
+    this.props.starAsset(this.props.item.id,false);
   }
 
   componentWillReceiveProps(nextProps){
@@ -196,7 +196,7 @@ class ItemRow extends Component {
   }
 
   retrieveGroupsDataAsynchronously(input){
-    groupsApi.searchGroup(input)
+    groupsApi.getGroups()
     .then((res) => {
       if (res.status === 200) {
         this.setState({
@@ -217,12 +217,12 @@ class ItemRow extends Component {
     if(this.state.selectedOption === 'users') {
       this.setState({
           searchValue: val,
-          selectedUser: item._id
+          selectedUser: item.id
       });
     } else {
       this.setState({
           searchValue: val,
-          selectedGroup: item._id
+          selectedGroup: item.id
       });
     }
   }
@@ -230,14 +230,14 @@ class ItemRow extends Component {
   renderItem(item, isHighlighted){
     if(this.state.selectedOption === 'users') {
       return (
-          <div className={`item ${isHighlighted ? 'item-highlighted' : ''}`} key={item._id}>
-            <p>{item.first_name} {item.last_name}</p>
+          <div className={`item ${isHighlighted ? 'item-highlighted' : ''}`} key={item.id}>
+            <p>{item.username}</p>
             <p>{item.email}</p>
           </div>
       ); 
     } else {
       return (
-          <div className={`item ${isHighlighted ? 'item-highlighted' : ''}`} key={item._id}>
+          <div className={`item ${isHighlighted ? 'item-highlighted' : ''}`} key={item.id}>
             <p>{item.name}</p>
           </div>
       );
@@ -246,7 +246,7 @@ class ItemRow extends Component {
 
   getItemValue(item){
     if(this.state.selectedOption === 'users') {
-      return `${item.first_name+' '+item.last_name}`;
+      return `${item.username}`;
     } else {
       return `${item.name}`;
     }
@@ -268,7 +268,7 @@ class ItemRow extends Component {
     			<p className="item-title" onClick={this.handleRowClick}>{this.props.item.name}</p>
     			<div className="item-star">
     				{	
-    					this.props.item.is_starred ? (
+    					this.props.item.starred ? (
     						<button className="star" onClick={this.removeAssetFromStarred}><i className="fa fa-lg fa-star" aria-hidden="true"></i></button>
     					) : (
     						<button className="not-star" onClick={this.addAssetToStarred}><i className="fa fa-lg fa-star-o" aria-hidden="true"></i></button>
@@ -278,7 +278,7 @@ class ItemRow extends Component {
     		</div>
         <div className="item-options">
           {
-            this.props.item.is_directory === true && this.props.item.is_owner === false ? (
+            this.props.item.directory === true && this.props.item.owner === false ? (
               <div></div>
             ) : (
         			<NavDropdown 
@@ -288,15 +288,15 @@ class ItemRow extends Component {
         				id="user-dropdown"
         				eventKey={1} >
                 {  
-                  this.props.item.is_directory === false &&
+                  this.props.item.directory === false &&
     		            <MenuItem eventKey={1.1} onClick={this.downloadAsset}>Download</MenuItem>
                 }
     		        {
-                  this.props.item.is_owner === true &&
+                  this.props.item.owner === true &&
                     <MenuItem eventKey={1.2} onClick={this.openShareModal}>Share</MenuItem>
                 }
                 {
-                  this.props.item.is_owner === true &&
+                  this.props.item.owner === true &&
     		            <MenuItem eventKey={1.3} onClick={this.deleteAsset}>Delete</MenuItem>
                 }
     	        </NavDropdown>
@@ -317,7 +317,7 @@ class ItemRow extends Component {
           <div className="row">
               <div className="col-xs-12 header">
                 {
-                  this.props.item.is_directory ? (
+                  this.props.item.directory ? (
                     <i className="fa fa-folder fa-3x" aria-hidden="true"></i>
                   ) : (
                     <i className="fa fa-file fa-3x" aria-hidden="true"></i>
@@ -352,8 +352,7 @@ class ItemRow extends Component {
                         inputProps={{ id: 'states-autocomplete', className: 'form-control'}}
                         wrapperStyle={{ position: 'relative', display: 'inline-block', width: '100%' }}
                         shouldItemRender={(item, value) => 
-                          item.first_name.toLowerCase().indexOf(value.toLowerCase()) > -1
-                          || item.last_name.toLowerCase().indexOf(value.toLowerCase()) > -1 
+                          item.username.toLowerCase().indexOf(value.toLowerCase()) > -1
                           || item.email.toLowerCase().indexOf(value.toLowerCase()) > -1
                         }
                         getItemValue={this.getItemValue}
@@ -418,7 +417,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         deleteAsset : (id) => dispatch(actions.deleteAsset(id)),
-        starAsset : (id,isStarred) => dispatch(actions.starAsset(id,isStarred)),
+        starAsset : (id,starred) => dispatch(actions.starAsset(id,starred)),
         shareAsset : (id,shareWith,targetId) => dispatch(actions.shareAsset(id,shareWith,targetId))
     };
 }

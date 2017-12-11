@@ -1,9 +1,9 @@
-package com.demo.demo.controller;
+package com.app.dropbox.controller;
 
-import com.demo.demo.entity.User;
-import com.demo.demo.service.UserService;
-import com.demo.demo.dto.ResponseDto;
-import com.demo.demo.viewmodels.ResponseObject;
+import com.app.dropbox.dto.ResponseDto;
+import com.app.dropbox.entity.User;
+import com.app.dropbox.service.UserService;
+import com.app.dropbox.utils.CustomException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,11 +30,15 @@ public class AuthController {
             JSONObject resObj = userService.signin(jsonObject);
             session.setAttribute("userid",resObj.getLong("id"));
             session.setAttribute("username",resObj.getString("username"));
-            res.setStatus(200L);
+            res.setStatus(200);
             res.setMessage("Success");
-            return new ResponseEntity(res,HttpStatus.OK);
+            return new ResponseEntity(res, HttpStatus.OK);
+        } catch(CustomException e) {
+            res.setStatus(e.getCode());
+            res.setMessage(e.getMessage());
+            return new ResponseEntity(res,HttpStatus.valueOf(e.getCode()));
         } catch(Exception e) {
-            res.setStatus(500L);
+            res.setStatus(500);
             res.setMessage(e.getMessage());
             return new ResponseEntity(res,HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -48,11 +52,15 @@ public class AuthController {
             JSONObject resObj = userService.signup(jsonObject);
             session.setAttribute("userid",resObj.getLong("id"));
             session.setAttribute("username",resObj.getString("username"));
-            res.setStatus(200L);
+            res.setStatus(200);
             res.setMessage("Success");
             return new ResponseEntity(res,HttpStatus.OK);
+        } catch(CustomException e) {
+            res.setStatus(e.getCode());
+            res.setMessage(e.getMessage());
+            return new ResponseEntity(res,HttpStatus.valueOf(e.getCode()));
         } catch(Exception e) {
-            res.setStatus(500L);
+            res.setStatus(500);
             res.setMessage(e.getMessage());
             return new ResponseEntity(res,HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -62,7 +70,7 @@ public class AuthController {
     public ResponseEntity<?> logout(HttpSession session) {
         ResponseDto res = new ResponseDto();
         session.invalidate();
-        res.setStatus(200L);
+        res.setStatus(200);
         res.setMessage("Success");
         return new ResponseEntity(res,HttpStatus.OK);
     }
@@ -71,13 +79,13 @@ public class AuthController {
     public ResponseEntity<?> checkSession(HttpSession session) {
         ResponseDto res = new ResponseDto();
         if(session.isNew() || session.getAttribute("userid") == null){
-            res.setStatus(401L);
+            res.setStatus(401);
             res.setMessage("Not authorized");
             return new ResponseEntity(res,HttpStatus.UNAUTHORIZED);
         }
         User user = new User();
         user.setUsername(session.getAttribute("username").toString());
-        res.setStatus(200L);
+        res.setStatus(200);
         res.setMessage("Success");
         res.setData(user);
         return new ResponseEntity(res,HttpStatus.OK);

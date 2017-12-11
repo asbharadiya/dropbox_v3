@@ -12,7 +12,7 @@ const initialState= {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case "SESSION_ACTIVE" :
-      return {...state,isLogged:true,uname:action.data.uname};
+      return {...state,isLogged:true,uname:action.data.username};
     case "SESSION_INACTIVE" :  
       return {...state,isLogged:false};
     case "GET_ASSETS_SUCCESS" :

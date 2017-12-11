@@ -1,16 +1,16 @@
-package com.demo.demo.dto;
+package com.app.dropbox.dto;
 
 public class ResponseDto {
 
-    private Long status;
+    private int status;
     private String message;
     private Object data;
 
-    public Long getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(Long status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 

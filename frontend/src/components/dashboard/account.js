@@ -11,11 +11,11 @@ class Account extends Component {
 	constructor(props){
 		super(props);
     this.state = {
-      first_name:"",
-      last_name:"",
+      firstName:"",
+      lastName:"",
       about:"",
       email:"",
-      contact_no:"",
+      contactNo:"",
       education:"",
       occupation:"",
       firstNameError:"",
@@ -47,11 +47,11 @@ class Account extends Component {
     }
     if(nextProps.profile){
       this.setState({
-        first_name:nextProps.profile.first_name,
-        last_name:nextProps.profile.last_name,
+        firstName:nextProps.profile.firstName,
+        lastName:nextProps.profile.lastName,
         about:nextProps.profile.about ? nextProps.profile.about:"",
         email:nextProps.profile.email,
-        contact_no:nextProps.profile.contact_no ? nextProps.profile.contact_no:"",
+        contactNo:nextProps.profile.contactNo ? nextProps.profile.contactNo:"",
         education:nextProps.profile.education ? nextProps.profile.education:"",
         occupation:nextProps.profile.occupation ? nextProps.profile.occupation:""
       });
@@ -79,10 +79,10 @@ class Account extends Component {
       return;
     }
     this.props.updateUserProfile({
-      first_name:this.state.first_name,
-      last_name:this.state.last_name,
+      firstName:this.state.firstName,
+      lastName:this.state.lastName,
       about:this.state.about,
-      contact_no:this.state.contact_no,
+      contactNo:this.state.contactNo,
       education:this.state.education,
       occupation:this.state.occupation
     });
@@ -98,11 +98,11 @@ class Account extends Component {
             <div className="row">
               <div className="form-group col-xs-12 col-sm-6">
                 <label>First name</label>
-                <input type="text" className="form-control" name="first_name" value={this.state.first_name} onChange={this.handleChange}/>
+                <input type="text" className="form-control" name="firstName" value={this.state.firstName} onChange={this.handleChange}/>
               </div>
               <div className="form-group col-xs-12 col-sm-6">
                 <label>Last name</label>
-                <input type="text" className="form-control" name="last_name" value={this.state.last_name} onChange={this.handleChange}/>
+                <input type="text" className="form-control" name="lastName" value={this.state.lastName} onChange={this.handleChange}/>
               </div>
             </div>
             <div className="row">
@@ -120,7 +120,7 @@ class Account extends Component {
             <div className="row">
               <div className="form-group col-xs-12">
                 <label>Contact number</label>
-                <input type="text" className="form-control" name="contact_no" value={this.state.contact_no} onChange={this.handleChange}/>
+                <input type="text" className="form-control" name="contactNo" value={this.state.contactNo} onChange={this.handleChange}/>
               </div>
             </div>
             <div className="row">
@@ -162,7 +162,7 @@ class Account extends Component {
                       this.props.activity.map(function(item,index) {
                         return (
                           <li className="activity-item" key={index}>
-                            <span>{item.action} at {moment(item.date).format('MM-DD-YYYY')}</span>
+                            <span>{item.action} at {moment(item.createdDate).format('MM-DD-YYYY')}</span>
                           </li>
                         );
                       })
