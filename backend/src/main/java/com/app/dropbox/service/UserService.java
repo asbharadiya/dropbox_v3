@@ -25,8 +25,8 @@ public class UserService {
     private UserActivityRepository userActivityRepository;
 
     public JSONObject signin(JSONObject jsonData) throws Exception {
-        if(jsonData.getString("email") == null || jsonData.getString("email").length() == 0
-                || jsonData.getString("password") == null || jsonData.getString("password").length() == 0) {
+        if(!jsonData.has("email") || jsonData.getString("email") == null || jsonData.getString("email").length() == 0
+                || !jsonData.has("password") || jsonData.getString("password") == null || jsonData.getString("password").length() == 0) {
             throw new CustomException("Required fields missing", 400);
         }
         User user = userRepository.findByEmail(jsonData.getString("email"));
@@ -43,10 +43,10 @@ public class UserService {
     }
 
     public JSONObject signup(JSONObject jsonData) throws Exception {
-        if(jsonData.getString("email") == null || jsonData.getString("email").length() == 0
-                || jsonData.getString("password") == null || jsonData.getString("password").length() == 0
-                || jsonData.getString("firstName") == null || jsonData.getString("firstName").length() == 0
-                || jsonData.getString("lastName") == null || jsonData.getString("lastName").length() == 0) {
+        if(!jsonData.has("email") || jsonData.getString("email") == null || jsonData.getString("email").length() == 0
+                || !jsonData.has("password") || jsonData.getString("password") == null || jsonData.getString("password").length() == 0
+                || !jsonData.has("firstName") || jsonData.getString("firstName") == null || jsonData.getString("firstName").length() == 0
+                || !jsonData.has("lastName") || jsonData.getString("lastName") == null || jsonData.getString("lastName").length() == 0) {
             throw new CustomException("Required fields missing", 400);
         }
         User user = userRepository.findByEmail(jsonData.getString("email"));
@@ -66,19 +66,21 @@ public class UserService {
     }
 
     public void updateProfile(Long userId, JSONObject jsonData) throws Exception {
-        if(jsonData.getString("email") == null || jsonData.getString("email").length() == 0
-                || jsonData.getString("password") == null || jsonData.getString("password").length() == 0
-                || jsonData.getString("firstName") == null || jsonData.getString("firstName").length() == 0
-                || jsonData.getString("lastName") == null || jsonData.getString("lastName").length() == 0) {
+        if(!jsonData.has("firstName") || jsonData.getString("firstName") == null || jsonData.getString("firstName").length() == 0
+                || !jsonData.has("lastName") || jsonData.getString("lastName") == null || jsonData.getString("lastName").length() == 0) {
             throw new CustomException("Required fields missing", 400);
         }
         User user = userRepository.findOne(userId);
         user.setFirstName(jsonData.getString("firstName"));
         user.setLastName(jsonData.getString("lastName"));
-        user.setAbout(jsonData.getString("about"));
-        user.setContactNo(jsonData.getString("contactNo"));
-        user.setEducation(jsonData.getString("education"));
-        user.setOccupation(jsonData.getString("occupation"));
+        if(jsonData.has("about"))
+            user.setAbout(jsonData.getString("about"));
+        if(jsonData.has("contactNo"))
+            user.setContactNo(jsonData.getString("contactNo"));
+        if(jsonData.has("education"))
+            user.setEducation(jsonData.getString("education"));
+        if(jsonData.has("occupation"))
+            user.setOccupation(jsonData.getString("occupation"));
         userRepository.save(user);
         UserActivity act = new UserActivity();
         act.setAction("Profile updated");
